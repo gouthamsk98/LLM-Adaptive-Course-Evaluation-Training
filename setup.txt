@@ -1,0 +1,38 @@
+jupyter notebook --NotebookApp.allow_origin=* --NotebookApp.allow_remote_access=1
+
+
+from transformers import TrainingArguments
+//sft training arg
+args = TrainingArguments(
+  output_dir = "mistral-embedded-c-instruct-v0.3.1",
+  #num_train_epochs=10,
+  max_steps = 200, # comment out this line if you want to train in epochs
+  per_device_train_batch_size = 6,
+  warmup_steps = 0.03,
+  logging_steps=10,
+  save_strategy="epoch",
+   optim="adamw_8bit", 
+  #evaluation_strategy="epoch",
+  # evaluation_strategy="steps",
+  # eval_steps=20, # comment out this line if you want to evaluate at the end of each epoch
+  learning_rate=2e-4,
+  bf16=True,
+  lr_scheduler_type='constant',
+  report_to="wandb",
+)
+
+//lora arg
+peft_config = LoraConfig(
+    lora_alpha=32,
+    lora_dropout=0.05,
+    r=64,
+    target_modules=[ "v_proj",
+    "up_proj",
+    "gate_proj",
+    "k_proj",
+    "q_proj",
+    "down_proj",
+    "o_proj"],
+    bias="none",
+    task_type="CAUSAL_LM"
+)
