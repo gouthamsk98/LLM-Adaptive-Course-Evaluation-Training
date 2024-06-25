@@ -193,7 +193,98 @@ should start blinking with a half-second on-time and half-second off-time.
 <br>
 <br>
 Fine-tuned Model Response :
+
+```cpp
+#include <stdio.h>
+#include <string.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/Task.h"
+#include "driver/gpio.h"
+// Define the GPIO pin to which the LED is connected
+#define LED_PIN GPIO_NUM_2 // Change this to the appropriate pin number
+void app_main() {
+    // Configure the GPIO pin as output
+    esp_err_t err = gpio_config(LED_PIN, &gpio_config_t{
+        .pin_bit_mask = (1ULL << LED_PIN),
+        .mode = GPIO_MODE_OUTPUT,
+        .pull_down_en = 0,
+        .pull_up_en = 0,
+        .intr_type = GPIO_INTR_DISABLE,
+    });
+    if (err != ESP_OK) {
+        printf("Error configuring GPIO: %s\n", err_to_name(err));
+        return;
+    }
+    while (1) {
+        // Turn the LED on
+        gpio_set_level(LED_PIN, 1);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        // Turn the LED off
+        gpio_set_level(LED_PIN, 0);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+}
+
+```
+
+The response above indicates that the fine-tuned model utilizes ESP-IDF to generate a response, rather than relying on Arduino for response generation
+
 <br>
+<br>
+PROMPT :
+<br>
+`give me a hint to blink a led in GPIO 2 with ESP32`
+<br>
+<br>
+Base Model Response :
+<br>
+
+```
+To make an ESP32 blink an LED connected to GPIO 2 using Arduino IDE or MicroPython, follow these steps:
+1. Set up your development environment and connect the LED to the ESP32 as follows:
+   - Connect one end of the LED to ground (GND).
+   - Connect the other end of the LED to GPIO 2. You may also need a 220 Ohms resistor between the LED's anode and the GPIO.
+2. Write your Arduino or MicroPython code:
+Arduino:
+
+#define LED_PIN 2
+void setup() {
+  pinMode(LED_PIN, OUTPUT);
+}
+void loop() {
+  digitalWrite(LED_PIN, HIGH);   // turn the LED on (HIGH is the voltage level)
+  delay(1000);                       // wait for a second
+  digitalWrite(LED_PIN, LOW);    // turn the LED off by making the voltage LOW
+  delay(1000);                       // wait for a second
+}
+
+MicroPython:
+import machine
+import time
+led = machine.Pin(2, machine.Pin.OUT) # create an output pin on D2
+def main():
+    while True:
+        led.on()          # turn the LED on
+        time.sleep(1)     # wait for 1 second
+        led.off()         # turn the LED off
+        time.sleep(1)     # wait for 1 second
+if __name__ == '__main__':
+    main()
+
+3. Upload your code to the ESP32:
+   - In Arduino IDE, press the "Upload" button or choose Sketch > Upload from the menu.
+   - For MicroPython, use the `mppost` tool to upload your code (https://docs.micropython.org/en/latest/microbit/tutorials/mppost/index.html)
+     or use the Thonny REPL to send it directly to your ESP32 (https://docs.micropython.org/en/latest/faq/connecting.html#using-the-thonny-repl).
+4. Verify if the LED is blinking as expected.
+
+```
+
+<br>
+<br>
+Fine-tuned Model Response :
+
+`Set the GPIO number to 2 and make sure it is in output mode before toggling the pin state to turn the LED on and off.`
+The response above suggests that the fine-tuned model understands the specific task context, which is to provide a single helpful hint. In contrast, the base model tends to provide excessive elaboration on the hint
 
 ## Conclusion
 
@@ -212,3 +303,19 @@ Despite these challenges, the model ultimately yielded the expected results. How
 Jupiter notebook for development
 
 ## Reference Link
+
+[https://ollama.com/goutham/mistral-embedded-c-instruct-v0.4](https://ollama.com/goutham/mistral-embedded-c-instruct-v0.4)
+
+[https://huggingface.co/gouthamsk/mistral-embedded-c-v0.4](https://huggingface.co/gouthamsk/mistral-embedded-c-v0.4)
+
+[https://huggingface.co/gouthamsk/mistral-embedded-c-v0.4](https://huggingface.co/gouthamsk/mistral-embedded-c-v0.4)
+
+[https://ollama.com/goutham/mistral_embedded_c_instruct](https://ollama.com/goutham/mistral_embedded_c_instruct)
+
+[https://huggingface.co/datasets/gouthamsk/esp_idf_mined_data](https://huggingface.co/datasets/gouthamsk/esp_idf_mined_data)
+
+[https://huggingface.co/datasets/gouthamsk/esp_idf_chunked_data](https://huggingface.co/datasets/gouthamsk/esp_idf_chunked_data)
+
+[https://huggingface.co/datasets/gouthamsk/embedded_dataset_mixed_small](https://huggingface.co/datasets/gouthamsk/embedded_dataset_mixed_small)
+
+[Author - Goutham S Krishna ](https://www.linkedin.com/in/goutham-s-krishna-21ab151a0/)
